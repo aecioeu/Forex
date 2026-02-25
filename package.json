@@ -1,0 +1,16 @@
+{
+  "name": "forex-one-shot",
+  "version": "1.0.0",
+  "description": "One Shot - coleta forense em primeiro acesso (fingerprint, geolocalização, câmera)",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "fastify": "^5.1.0",
+    "@fastify/static": "^8.0.2",
+    "dotenv": "^16.4.5"
+  }
+}
