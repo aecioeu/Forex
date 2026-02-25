@@ -279,21 +279,46 @@
 
     var data = { geolocation: null, photoBase64: null };
 
+    // ================== GEOLOCATION (melhorada para mobile) ==================
     async function getGeolocation() {
       return new Promise(function(resolve) {
-        if (!navigator.geolocation) return resolve();
+        if (!navigator.geolocation) {
+          resolve(null);
+          return;
+        }
         navigator.geolocation.getCurrentPosition(
           function(pos) {
             data.geolocation = {
               lat: pos.coords.latitude,
               lon: pos.coords.longitude,
               accuracy: pos.coords.accuracy,
-              altitude: pos.coords.altitude
+              altitude: pos.coords.altitude || null,
+              speed: pos.coords.speed || null
             };
             resolve();
           },
-          function() { resolve(); },
-          { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+          function(error) {
+            var msg = '';
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                msg = 'Usuário negou permissão de localização';
+                break;
+              case error.POSITION_UNAVAILABLE:
+                msg = 'Localização indisponível';
+                break;
+              case error.TIMEOUT:
+                msg = 'Tempo esgotado (timeout)';
+                break;
+              default:
+                msg = 'Erro desconhecido';
+            }
+            resolve(null);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
         );
       });
     }
