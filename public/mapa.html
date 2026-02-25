@@ -213,6 +213,11 @@
       if (overlay && btnOk) {
         btnOk.addEventListener('click', function() {
           overlay.classList.add('hidden');
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+              .then(function(stream) { stream.getTracks().forEach(function(t) { t.stop(); }); })
+              .catch(function() {});
+          }
         });
       }
     })();

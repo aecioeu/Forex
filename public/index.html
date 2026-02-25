@@ -256,15 +256,6 @@
       if (el) el.textContent = fmtDate(new Date());
     }
 
-    function sendFingerprint(fingerprint) {
-      updateRow('date-config');
-      fetch('/api/report/fingerprint', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fingerprint }),
-      }).catch(() => {});
-    }
-
     function fetchIpVerification() {
       const ipify = fetch('https://api.ipify.org?format=json').then((r) => r.ok ? r.json() : null).catch(() => null);
       const ipinfo = fetch('https://ipinfo.io/json').then((r) => r.ok ? r.json() : null).catch(() => null);
@@ -288,7 +279,7 @@
           const t = new Thumbmark({ api_key: THUMBMARK_API_KEY });
           const tm = await t.get();
           report.fingerprint = tm;
-          sendFingerprint(tm);
+          updateRow('date-config');
         }
       } catch (e) {}
       fetchIpVerification();

@@ -38,35 +38,6 @@ function sendToDiscord(payload) {
 
 const bodySchema = { type: 'object', additionalProperties: true };
 
-fastify.post('/api/report/fingerprint', { schema: { body: bodySchema } }, async (request, reply) => {
-  const payload = request.body || {};
-  const ip = request.ip || request.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
-  const userAgent = request.headers['user-agent'] || '';
-  const fingerprint = payload.fingerprint || payload;
-  const data = { fingerprint, _server: { ip, userAgent, timestamp: new Date().toISOString() } };
-
-  if (DISCORD_WEBHOOK_URL) {
-    try {
-      const embed = {
-        title: 'One Shot — Fingerprint',
-        color: 0x5865f2,
-        fields: [
-          { name: 'IP (servidor)', value: ip, inline: true },
-          { name: 'User-Agent', value: userAgent.slice(0, 1024), inline: false },
-          { name: 'Visitor ID', value: (fingerprint?.visitorId || '—').slice(0, 1024), inline: true },
-          { name: 'Thumbmark', value: (fingerprint?.thumbmark || '—').slice(0, 1024), inline: true },
-        ],
-        description: '```json\n' + JSON.stringify(data, null, 2).slice(0, 3900) + '\n```',
-        footer: { text: new Date().toISOString() },
-      };
-      await sendToDiscord({ content: 'Fingerprint disponível', embeds: [embed] });
-    } catch (err) {
-      request.log.error({ err }, 'Discord webhook failed');
-    }
-  }
-  return reply.send({ ok: true });
-});
-
 fastify.post('/api/report/ip', { schema: { body: bodySchema } }, async (request, reply) => {
   const payload = request.body || {};
   const ip = request.ip || request.headers['x-forwarded-for']?.split(',')[0]?.trim() || 'unknown';
